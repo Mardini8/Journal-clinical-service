@@ -35,35 +35,21 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Health check - public
-                        .requestMatchers("/actuator/health").permitAll()
-
-                        // GET patients/practitioners - authenticated users can read
+                        // GET patients/practitioners
                         .requestMatchers(HttpMethod.GET, "/api/patients/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/practitioners/**").authenticated()
 
-                        // Create/Update patients - only DOCTOR and STAFF
-                        .requestMatchers(HttpMethod.POST, "/api/patients/**").hasAnyRole("DOCTOR", "STAFF")
-                        .requestMatchers(HttpMethod.PUT, "/api/patients/**").hasAnyRole("DOCTOR", "STAFF")
-                        .requestMatchers(HttpMethod.DELETE, "/api/patients/**").hasRole("DOCTOR")
-
-                        // Observations - DOCTOR can do everything, STAFF can create, PATIENT can read own
+                        // Observations
                         .requestMatchers(HttpMethod.GET, "/api/v1/clinical/observations/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/clinical/observations/**").hasAnyRole("DOCTOR", "STAFF")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/clinical/observations/**").hasRole("DOCTOR")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/clinical/observations/**").hasRole("DOCTOR")
 
-                        // Conditions - DOCTOR can do everything, STAFF can create
+                        // Conditions
                         .requestMatchers(HttpMethod.GET, "/api/v1/clinical/conditions/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/clinical/conditions/**").hasAnyRole("DOCTOR", "STAFF")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/clinical/conditions/**").hasRole("DOCTOR")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/clinical/conditions/**").hasRole("DOCTOR")
 
-                        // Encounters - all authenticated can read, DOCTOR/STAFF can create
+                        // Encounters
                         .requestMatchers(HttpMethod.GET, "/api/v1/clinical/encounters/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/clinical/encounters/**").hasAnyRole("DOCTOR", "STAFF")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/clinical/encounters/**").hasAnyRole("DOCTOR", "STAFF")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/clinical/encounters/**").hasRole("DOCTOR")
 
                         // All other requests require authentication
                         .anyRequest().authenticated()

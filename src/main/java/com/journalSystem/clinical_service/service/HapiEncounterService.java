@@ -37,7 +37,6 @@ public class HapiEncounterService {
         try {
             IGenericClient client = hapiClient.getClient();
 
-            // Look up the actual FHIR ID from personnummer
             String patientFhirId = fhirLookupService.findPatientIdByPersonnummer(patientPersonnummer);
 
             Bundle bundle = client
@@ -83,7 +82,6 @@ public class HapiEncounterService {
     ) {
         IGenericClient client = hapiClient.getClient();
 
-        // Look up actual FHIR IDs from personnummer
         String patientFhirId = fhirLookupService.findPatientIdByPersonnummer(patientPersonnummer);
         System.out.println("Creating encounter - Patient personnummer: " + patientPersonnummer + " -> FHIR ID: " + patientFhirId);
 
@@ -101,7 +99,6 @@ public class HapiEncounterService {
                 .setCode("185349003")
                 .setDisplay("Encounter for check up (procedure)");
 
-        // Use the FHIR ID, not the personnummer
         encounter.setSubject(new Reference("Patient/" + patientFhirId));
 
         if (practitionerPersonnummer != null && !practitionerPersonnummer.isEmpty()) {

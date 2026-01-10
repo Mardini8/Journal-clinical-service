@@ -13,8 +13,6 @@ import java.util.Optional;
 
 /**
  * Service for looking up FHIR resources by identifier (personnummer).
- * This is needed because the frontend sends personnummer, but FHIR references
- * require the actual FHIR resource ID.
  */
 @Service
 @RequiredArgsConstructor
@@ -22,13 +20,6 @@ public class FhirLookupService {
 
     private final HapiClientService hapiClient;
 
-    /**
-     * Find a Patient's FHIR ID by their personnummer (identifier).
-     *
-     * @param personnummer The patient's personnummer
-     * @return The FHIR resource ID
-     * @throws RuntimeException if patient not found
-     */
     public String findPatientIdByPersonnummer(String personnummer) {
         if (personnummer == null || personnummer.isEmpty()) {
             throw new IllegalArgumentException("Personnummer cannot be null or empty");
@@ -37,7 +28,6 @@ public class FhirLookupService {
         IGenericClient client = hapiClient.getClient();
 
         try {
-            // First, try to find by identifier
             Bundle bundle = client
                     .search()
                     .forResource(Patient.class)
@@ -56,7 +46,6 @@ public class FhirLookupService {
                 return fhirId;
             }
 
-            // If not found by identifier, try direct ID lookup (backwards compatibility)
             try {
                 Patient patient = client
                         .read()
@@ -70,7 +59,6 @@ public class FhirLookupService {
                     return fhirId;
                 }
             } catch (Exception e) {
-                // Not found by direct ID either
             }
 
             throw new RuntimeException("Patient not found with identifier or ID: " + personnummer);
@@ -84,13 +72,7 @@ public class FhirLookupService {
         }
     }
 
-    /**
-     * Find a Practitioner's FHIR ID by their personnummer (identifier).
-     *
-     * @param personnummer The practitioner's personnummer
-     * @return The FHIR resource ID
-     * @throws RuntimeException if practitioner not found
-     */
+
     public String findPractitionerIdByPersonnummer(String personnummer) {
         if (personnummer == null || personnummer.isEmpty()) {
             throw new IllegalArgumentException("Personnummer cannot be null or empty");
@@ -99,7 +81,6 @@ public class FhirLookupService {
         IGenericClient client = hapiClient.getClient();
 
         try {
-            // First, try to find by identifier
             Bundle bundle = client
                     .search()
                     .forResource(Practitioner.class)
@@ -118,7 +99,6 @@ public class FhirLookupService {
                 return fhirId;
             }
 
-            // If not found by identifier, try direct ID lookup (backwards compatibility)
             try {
                 Practitioner practitioner = client
                         .read()
@@ -132,7 +112,6 @@ public class FhirLookupService {
                     return fhirId;
                 }
             } catch (Exception e) {
-                // Not found by direct ID either
             }
 
             throw new RuntimeException("Practitioner not found with identifier or ID: " + personnummer);
@@ -146,9 +125,6 @@ public class FhirLookupService {
         }
     }
 
-    /**
-     * Find a Patient's FHIR ID by personnummer, returning Optional.
-     */
     public Optional<String> findPatientIdOptional(String personnummer) {
         try {
             return Optional.of(findPatientIdByPersonnummer(personnummer));
@@ -157,9 +133,6 @@ public class FhirLookupService {
         }
     }
 
-    /**
-     * Find a Practitioner's FHIR ID by personnummer, returning Optional.
-     */
     public Optional<String> findPractitionerIdOptional(String personnummer) {
         try {
             return Optional.of(findPractitionerIdByPersonnummer(personnummer));

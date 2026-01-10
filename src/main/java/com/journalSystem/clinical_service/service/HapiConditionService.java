@@ -37,7 +37,6 @@ public class HapiConditionService {
         try {
             IGenericClient client = hapiClient.getClient();
 
-            // Look up the actual FHIR ID from personnummer
             String patientFhirId = fhirLookupService.findPatientIdByPersonnummer(patientPersonnummer);
 
             Bundle bundle = client
@@ -83,7 +82,6 @@ public class HapiConditionService {
     ) {
         IGenericClient client = hapiClient.getClient();
 
-        // Look up actual FHIR IDs from personnummer
         String patientFhirId = fhirLookupService.findPatientIdByPersonnummer(patientPersonnummer);
         System.out.println("Creating condition - Patient personnummer: " + patientPersonnummer + " -> FHIR ID: " + patientFhirId);
 
@@ -99,7 +97,6 @@ public class HapiConditionService {
                 .setSystem("http://terminology.hl7.org/CodeSystem/condition-ver-status")
                 .setCode("confirmed");
 
-        // Use the FHIR ID, not the personnummer
         condition.setSubject(new Reference("Patient/" + patientFhirId));
 
         if (practitionerPersonnummer != null && !practitionerPersonnummer.isEmpty()) {

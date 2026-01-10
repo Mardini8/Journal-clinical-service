@@ -37,7 +37,6 @@ public class HapiObservationService {
         try {
             IGenericClient client = hapiClient.getClient();
 
-            // Look up the actual FHIR ID from personnummer
             String patientFhirId = fhirLookupService.findPatientIdByPersonnummer(patientPersonnummer);
 
             Bundle bundle = client
@@ -85,7 +84,6 @@ public class HapiObservationService {
     ) {
         IGenericClient client = hapiClient.getClient();
 
-        // Look up actual FHIR IDs from personnummer
         String patientFhirId = fhirLookupService.findPatientIdByPersonnummer(patientPersonnummer);
         System.out.println("Creating observation - Patient personnummer: " + patientPersonnummer + " -> FHIR ID: " + patientFhirId);
 
@@ -105,7 +103,6 @@ public class HapiObservationService {
                 .setDisplay(description);
         observation.getCode().setText(description);
 
-        // Use the FHIR ID, not the personnummer
         observation.setSubject(new Reference("Patient/" + patientFhirId));
 
         if (performerPersonnummer != null && !performerPersonnummer.isEmpty()) {
